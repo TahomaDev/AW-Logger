@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "AW_Logger",
+	"Description": "AWAIKO Logger",
+	"Category": "Log",
+	"CreatedBy": "AWAIKO",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "AW_Logger",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
