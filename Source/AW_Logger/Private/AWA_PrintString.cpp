@@ -5,46 +5,15 @@
 
 #include "AWA_Settings.h"
 #include "GameFramework/GameUserSettings.h"
-#include "Logging/LogVerbosity.h"
 #include "Kismet/GameplayStatics.h"
 
+
+
 void UAWA_PrintString::AWA_PrintString(const UObject* WorldContextObject, const FString& InString, bool bPrintToScreen,
-                                       bool bPrintToLog, AWA_E_TypeMsg TypeMsg, float Duration, const FString& Prefix = "")
+								bool bPrintToLog, AWA_E_TypeMsg TypeMesssage, float Duration,
+								const FLinearColor MsgColor,
+								const FString& Importance, const FString& Prefix = "")
 {
-#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST) // Do not Print in Shipping or Test
-	
-	FString Importance = "";
-	FLinearColor MsgColor = FLinearColor::Blue;
-	ELogVerbosity::Type ConsoleLogType = ELogVerbosity::Log;
-	
-	switch (TypeMsg)
-	{
-	case Debug:
-		MsgColor = GetDefault<UAWA_Settings>()->Debug;
-		Importance = "Debug";
-		ConsoleLogType = ELogVerbosity::All;
-		break;
-		
-	case Info:
-		MsgColor = GetDefault<UAWA_Settings>()->Info;
-		Importance = "Info";
-		ConsoleLogType = ELogVerbosity::Display;
-		break;
-		
-	case Warning:
-		MsgColor = GetDefault<UAWA_Settings>()->Warning;
-		Importance = "Warning";
-		ConsoleLogType = ELogVerbosity::Warning;
-		break;
-		
-	case Error:
-		MsgColor = GetDefault<UAWA_Settings>()->Error;
-		Importance = "Error";
-		ConsoleLogType = ELogVerbosity::Error;
-		break;
-	default: ;
-	}
-	
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::ReturnNull);
 	FString Pfx = "";
 	if (World)
@@ -89,7 +58,8 @@ void UAWA_PrintString::AWA_PrintString(const UObject* WorldContextObject, const 
 
 	if (bPrintToLog)
 	{
-		switch (TypeMsg)
+		
+		switch (TypeMesssage)
 		{
 		case Debug:
 			UE_LOG(LogBlueprintUserMessages, Log, TEXT("%s"), *FinalLogString);
@@ -107,11 +77,10 @@ void UAWA_PrintString::AWA_PrintString(const UObject* WorldContextObject, const 
 			UE_LOG(LogBlueprintUserMessages, Error, TEXT("%s"), *FinalLogString);
 			break;
 		};
+		
 	}
 	else
-	{
 		UE_LOG(LogBlueprintUserMessages, Verbose, TEXT("%s"), *FinalLogString);
-	}
 
 	// Also output to the screen, if possible
 	if (bPrintToScreen)
@@ -125,49 +94,67 @@ void UAWA_PrintString::AWA_PrintString(const UObject* WorldContextObject, const 
 			GEngine->AddOnScreenDebugMessage((uint64)-1, Duration, MsgColor.ToFColor(true), FinalLogString);
 		}
 		else
-		{
 			UE_LOG(LogBlueprint, VeryVerbose, TEXT("Screen messages disabled (!GAreScreenMessagesEnabled).  Cannot print to screen."));
-		}
 	}
-#endif
 }
 
-void UAWA_PrintString::PrintString_Debug(const UObject* WorldContextObject, const FString& Message, const FString& Prefix)
+void UAWA_PrintString::PrintString_Debug(const UObject* WorldContextObject,
+	const FString& Message, const FString& Prefix,
+	float Duration)
 {
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+
+	if (Duration == -1)
+		Duration = GetDefault<UAWA_Settings>()->DebugShowDuration;	
 	
 	AWA_PrintString(WorldContextObject, Message, true, true, AWA_E_TypeMsg::Debug,
-		GetDefault<UAWA_Settings>()->DebugShowDuration, Prefix);
+		Duration,
+		GetDefault<UAWA_Settings>()->Debug, "Debug", Prefix);
 
 #endif	
 }
 
-void UAWA_PrintString::PrintString_Error(const UObject* WorldContextObject, const FString& Message, const FString& Prefix)
+void UAWA_PrintString::PrintString_Error(const UObject* WorldContextObject,
+	const FString& Message, const FString& Prefix,
+	float Duration)
 {
-#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+	if (Duration == -1)
+		Duration = GetDefault<UAWA_Settings>()->ErrorShowDuration;	
 	
 	AWA_PrintString(WorldContextObject, Message, true, true, AWA_E_TypeMsg::Error,
-		GetDefault<UAWA_Settings>()->ErrorShowDuration, Prefix);
-
-#endif
+		Duration,
+		GetDefault<UAWA_Settings>()->Error, "Error", Prefix);
+	
 }
 
-void UAWA_PrintString::PrintString_Info(const UObject* WorldContextObject, const FString& Message, const FString& Prefix)
+void UAWA_PrintString::PrintString_Info(const UObject* WorldContextObject,
+	const FString& Message, const FString& Prefix,
+	float Duration)
 {
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+
+	if (Duration == -1)
+		Duration = GetDefault<UAWA_Settings>()->InfoShowDuration;	
 	
 	AWA_PrintString(WorldContextObject, Message, true, true, AWA_E_TypeMsg::Info,
-		GetDefault<UAWA_Settings>()->InfoShowDuration, Prefix);
+		Duration,
+		GetDefault<UAWA_Settings>()->Info, "Info", Prefix);
 
 #endif
 }
 
-void UAWA_PrintString::PrintString_Warning(const UObject* WorldContextObject, const FString& Message, const FString& Prefix)
+void UAWA_PrintString::PrintString_Warning(const UObject* WorldContextObject,
+	const FString& Message, const FString& Prefix,
+	float Duration)
 {
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+
+	if (Duration == -1)
+		Duration = GetDefault<UAWA_Settings>()->WarningShowDuration;	
 	
 	AWA_PrintString(WorldContextObject, Message, true, true, AWA_E_TypeMsg::Warning,
-		GetDefault<UAWA_Settings>()->WarningShowDuration, Prefix);
+		Duration,
+		GetDefault<UAWA_Settings>()->Warning, "Warning", Prefix);
 
 #endif
 }
