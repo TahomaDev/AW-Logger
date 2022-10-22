@@ -43,16 +43,17 @@ void UAWA_PrintString::AWA_PrintString(const UObject* WorldContextObject, const 
 								? FString::Printf(TEXT("[%s] "), *Importance)
 								: "";
 
-	FString FinalLogString = FString::Printf(TEXT("%s%s%s"), *CurrentImportance,  *CurrentPrefix, *InString);
+	FString FinalLogString = FString::Printf(TEXT("%s%s"), *CurrentImportance, *InString);
 
 	static const FBoolConfigValueHelper DisplayPrintStringSource(TEXT("Kismet"), TEXT("bLogPrintStringSource"), GEngineIni);
 	if (GetDefault<UAWA_Settings>()->ShowSource && DisplayPrintStringSource)
 	{
-		const FString SourceObjectPrefix = FString::Printf(TEXT("[%s] "), *GetNameSafe(WorldContextObject));
+		const FString SourceObjectPrefix = FString::Printf(TEXT("[%s] %s "), *GetNameSafe(WorldContextObject), *CurrentPrefix);
 		FinalLogString = Pfx + SourceObjectPrefix + FinalLogString;
 	}
 	else
 	{
+		const FString SourceObjectPrefix = FString::Printf(TEXT("%s "), *CurrentPrefix);
 		FinalLogString = Pfx + FinalLogString;
 	}
 
